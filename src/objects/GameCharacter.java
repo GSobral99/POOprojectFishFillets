@@ -10,7 +10,7 @@ public abstract class GameCharacter extends GameObject implements CanPassWall{
 
 	protected abstract boolean canPushObject(MovableObject obj, Vector2D dir); //verificar se o game character pode empurrar objeto 
 																			   //(Override para cada peixe)
-	protected Direction direcao;
+	protected Direction direction;
 	protected abstract boolean checkDeath(); //verificar se morreu (Override para cada peixe)
 	private boolean hasExited;
 	private boolean isDead;
@@ -22,7 +22,7 @@ public abstract class GameCharacter extends GameObject implements CanPassWall{
 	//movimento do personagem
 	public void move(Vector2D dir){
 		//dar sempre update da direção
-		updateDirecao(dir);
+		updateDirection(dir);
 		//ver se o movimento é válidp
 		if (!validMove(dir)) {
 			return;
@@ -50,7 +50,7 @@ public abstract class GameCharacter extends GameObject implements CanPassWall{
 		//se o objeto for movivel verificar se ele pode se mover ou não
 		if (obj instanceof MovableObject) {
 			//se o objeto não se pode mover o peixe não se move
-			if (!empurrarObject((MovableObject) obj, dir)) {
+			if (!pushObject((MovableObject) obj, dir)) {
 				return; 
 			}
 		}
@@ -59,12 +59,11 @@ public abstract class GameCharacter extends GameObject implements CanPassWall{
 		checkIfExited();
 
 	}
-	public boolean validMove(Vector2D dir) {
-		//validação de movimentos (Override para cada peixe)
-		return false;
-	}
+	// Each character has its own movement rules, so there is no sensible
+	// default here — SmallFish, BigFish and Crab must each provide one.
+	public abstract boolean validMove(Vector2D dir);
 	//verfificar se pode empurrar um objeto
-	protected boolean empurrarObject(MovableObject obj, Vector2D dir) {
+	protected boolean pushObject(MovableObject obj, Vector2D dir) {
 		Point2D newPos = obj.getPosition().plus(dir);
 		GameObject obstaculo = getObjectAt(newPos);
 		//se a anchor já se moveu Horizontalmente não pode voltar a mover-se
@@ -98,7 +97,7 @@ public abstract class GameCharacter extends GameObject implements CanPassWall{
 		//se o obstaculo for movivel
 		if (obstaculo instanceof MovableObject) {
 			//empurar o proximo objeto tambem fazendo as verificações novemente usando a propria função
-			if (empurrarObject((MovableObject) obstaculo, dir)) {
+			if (pushObject((MovableObject) obstaculo, dir)) {
 				if (dir.getX()!=0)
 					obj.setHasMovedH(true);
 				obj.setPosition(newPos);
@@ -113,7 +112,8 @@ public abstract class GameCharacter extends GameObject implements CanPassWall{
 	private boolean isOutOfBounds() {
 		if (position== null)
 			return false;
-		return (position.getX() >9 || position.getY() >9 || position.getX()<0 || position.getY() <0);
+		int max = Room.GRID_SIZE - 1;
+		return (position.getX() > max || position.getY() > max || position.getX() < 0 || position.getY() < 0);
 	}
 	
 	//verificar se o peixe saiu
@@ -127,11 +127,11 @@ public abstract class GameCharacter extends GameObject implements CanPassWall{
 	}
 	
 	
-	protected void updateDirecao(Vector2D dir) {
+	protected void updateDirection(Vector2D dir) {
 		if (dir.getX() == 1) 
-			direcao = Direction.RIGHT;
+			direction = Direction.RIGHT;
 		if (dir.getX() == -1)
-			direcao = Direction.LEFT;
+			direction = Direction.LEFT;
 	}
 	
 	public boolean isDead() {

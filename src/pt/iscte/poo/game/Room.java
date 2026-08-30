@@ -15,6 +15,10 @@ import pt.iscte.poo.utils.Point2D;
 
 public class Room {
 
+	// Every room is a fixed 10x10 grid; GameCharacter also relies on this
+	// value to detect when a fish has swum off the edge of the room.
+	public static final int GRID_SIZE = 10;
+
 	private List<GameObject> objects;
 	private String roomName;
 	private GameEngine engine;
@@ -151,8 +155,8 @@ public class Room {
 	}
 
 	private static void fillWithWater(Room room) {
-		for(int i=0; i<10; i++){
-			for(int j=0; j<10; j++){
+		for(int i=0; i<GRID_SIZE; i++){
+			for(int j=0; j<GRID_SIZE; j++){
 				Water water = new Water(room);
 				water.setPosition(i, j);
 				room.addObject(water);

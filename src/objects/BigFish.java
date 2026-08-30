@@ -114,7 +114,7 @@ public class BigFish extends GameCharacter {
 		if (isDead()) {
 	        return "blood";
 	    }
-		if (direcao== Direction.LEFT) {
+		if (direction== Direction.LEFT) {
 			return "bigFishLeft";
 		}
 		else {

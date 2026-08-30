@@ -31,8 +31,9 @@ public class Bomb extends MovableObject implements Explosive{
 		return false;
 	}
 	//verificar se a bomba deve explodir
+
 	@Override
-	public boolean deveExplodir() {
+	public boolean shouldExplode() {
 		Vector2D down = new Vector2D(0, 1);
         Point2D posAbaixo = position.plus(down);
         //verificar se o objeto caiu e verificar se já tem suporte novamente
@@ -52,7 +53,7 @@ public class Bomb extends MovableObject implements Explosive{
 		//criar array de objetos a remover
 		List<GameObject> remove = new ArrayList<>();
 		List<Point2D> directions = position.getNeighbourhoodPoints();
-		if (deveExplodir()) {
+		if (shouldExplode()) {
 			//se a bomba deve explodir ver os pontos adjacentes e adiciona-los para remoção
 			for (Point2D p: directions) {
 				remove.add(getObjectAt(p));

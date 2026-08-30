@@ -20,7 +20,7 @@ public class GameEngine implements Observer {
 	private Map<String,Room> rooms;
 	private Room currentRoom;
 	private int lastTickProcessed = 0;
-	private GameCharacter fishAtual; //retorna o fish que está atualmente a ser movimentado
+	private GameCharacter currentFish; //retorna o fish que está atualmente a ser movimentado
 	private int currentLevel = 0; //nivel atual
 	private long gameTime;  //tempo de jogo
 	private int smallFishMoves;  //movimentos do smallFish
@@ -31,7 +31,7 @@ public class GameEngine implements Observer {
 		gameTime = System.currentTimeMillis();
 		rooms = new HashMap<String,Room>();
 		startLevel(0);
-		fishAtual= SmallFish.getInstance();
+		currentFish= SmallFish.getInstance();
 		updateMessage();
 		updateGUI();
 	}
@@ -55,8 +55,8 @@ public class GameEngine implements Observer {
 			//teclas de direção dão vetores direção que vão mover os peixes
 			if ( k == KeyEvent.VK_DOWN || k == KeyEvent.VK_UP || k == KeyEvent.VK_LEFT || k == KeyEvent.VK_RIGHT) {
 				//se o peixe ainda não saiu tenta mover-se
-				if(!fishAtual.hasExited()) {
-					fishAtual.move(Direction.directionFor(k).asVector());
+				if(!currentFish.hasExited()) {
+					currentFish.move(Direction.directionFor(k).asVector());
 					//se morreu restart level
 					if (checkDeath()) {
 						restartLevel();
@@ -64,13 +64,13 @@ public class GameEngine implements Observer {
 					}
 					//os inimigos movem-se se os peixes se moverem
 					moveEnemies();
-					if(fishAtual instanceof SmallFish) {
+					if(currentFish instanceof SmallFish) {
 						smallFishMoves++;
 					}else {
 						bigFishMoves++;
 					}
 					//se o peixe saiu trocar de peixe
-					if(fishAtual.hasExited())
+					if(currentFish.hasExited())
 						switchFish();
 				}
 				
@@ -107,28 +107,30 @@ public class GameEngine implements Observer {
 	private void startLevel(int levelNumber) {
 		currentLevel = levelNumber;
 		String roomFileName = "room" + currentLevel + ".txt";
-		
-		//carrega o nível do ficheiro
 		File roomFile = new File("./rooms/" + roomFileName);
 		//se não existe aquele nivel é porque o jogo acabou
 		if (!roomFile.exists()) {
 			showGameComplete();
 			return;
 		}
-		//lê o room e substitui no mapa
+		loadRoom(roomFile);
+	}
+
+	// Lê um room a partir de ficheiro, regista-o no mapa de rooms e repõe o
+	// estado inicial de ambos os peixes. Usado tanto para iniciar um nível
+	// novo (startLevel) como para o reiniciar (restartLevel).
+	private void loadRoom(File roomFile) {
 		currentRoom = Room.readRoom(roomFile, this);
-		rooms.put(roomFileName, currentRoom);
-		
-		//iniciar os peixes
+		rooms.put(currentRoom.getName(), currentRoom);
+
 		SmallFish.getInstance().setRoom(currentRoom);
 		SmallFish.getInstance().reset();
-		
+
 		BigFish.getInstance().setRoom(currentRoom);
 		BigFish.getInstance().reset();
-		
-		fishAtual = SmallFish.getInstance();
+
+		currentFish = SmallFish.getInstance();
 		lastTickProcessed = ImageGUI.getInstance().getTicks();
-		
 	}
 	
 	//iterar o numero do nivel
@@ -151,18 +153,7 @@ public class GameEngine implements Observer {
 	//reiniciar level
 	private void restartLevel() {
 		File roomFile = new File("./rooms/" + currentRoom.getName());
-		currentRoom = Room.readRoom(roomFile, this);
-		rooms.put(currentRoom.getName(), currentRoom);
-		
-		SmallFish.getInstance().setRoom(currentRoom);
-		SmallFish.getInstance().reset();
-		
-		BigFish.getInstance().setRoom(currentRoom);
-		BigFish.getInstance().reset();
-		
-		fishAtual = SmallFish.getInstance();
-		lastTickProcessed = ImageGUI.getInstance().getTicks();
-		
+		loadRoom(roomFile);
 		updateGUI();
 	}
 	//verificar morte dos peixes
@@ -184,13 +175,13 @@ public class GameEngine implements Observer {
 
 	//trocar o peixe
 		private void switchFish() {
-			if (fishAtual instanceof SmallFish) {
+			if (currentFish instanceof SmallFish) {
 				if(!BigFish.getInstance().hasExited() && !BigFish.getInstance().isDead() ) {
-					fishAtual = BigFish.getInstance();
+					currentFish = BigFish.getInstance();
 				}
 			}else {
 				if (!SmallFish.getInstance().hasExited() && !SmallFish.getInstance().isDead()) {
-					fishAtual=SmallFish.getInstance();
+					currentFish=SmallFish.getInstance();
 				}
 			}
 		}
@@ -235,7 +226,7 @@ public class GameEngine implements Observer {
 		for (GameObject obj : currentRoom.getObjects()) {
 			 if (obj instanceof Explosive) { 
 				 Explosive exp= (Explosive) obj;
-				 if (exp.deveExplodir()) {
+				 if (exp.shouldExplode()) {
 					 remover.addAll(exp.explode());
 				 }
 			 }
@@ -359,8 +350,8 @@ public class GameEngine implements Observer {
 	}
 	
 	//fish atual
-	public GameCharacter getFishAtual() {
-		return fishAtual;
+	public GameCharacter getCurrentFish() {
+		return currentFish;
 	}
 	private void processTick() {		
 		lastTickProcessed++;

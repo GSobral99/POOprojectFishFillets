@@ -122,7 +122,7 @@ public class SmallFish extends GameCharacter {
 		if (isDead()) {
 	        return "blood";
 	    }
-		if (direcao== Direction.LEFT) {
+		if (direction== Direction.LEFT) {
 			return "smallFishLeft";
 		}
 		else {
