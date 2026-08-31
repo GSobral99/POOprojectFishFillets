@@ -67,7 +67,7 @@ Below is a comprehensive list of the implemented entities and their core behavio
 | **Bomb** | Lightweight | Detonates upon hitting the floor, wiping out nearby entities (sparing the fish that dropped it). |
 | **Trap** | Heavyweight | Lethal to the Big Fish upon contact. The Small Fish can safely swim through it. |
 | **Holed Wall** | Static | A barrier that exclusively allows the Small Fish to cross. |
-| **🎈 Buoy** | Anti-gravity | Features **inverted gravity**. Floats towards the top of the level unless obstructed. Useful for blocking upper pathways or lifting other objects. **Only the Big Fish can push it downwards|
+| **Buoy** | Anti-gravity | Features **inverted gravity**. Floats towards the top of the level unless obstructed. Useful for blocking upper pathways or lifting other objects. **Only the Big Fish can push it downwards|
 
 ### Krab (Enemy than can kill the Small Fish)
 An autonomous enemy that:
