@@ -1,4 +1,4 @@
-# Fish Fillets 🐟
+# Fish Fillets
 
 A Java clone of the puzzle game **Fish Fillets**, built from scratch, with some GUI, Utils, Observer and GameEngine functions already provided for an Object-Oriented Programming project. Controll a small fish and a big fish in underwater rooms, pushing crates, dodging enemies, and avoiding traps - each fish has different abilities, and you must switch between them to solve every puzzle.
 
@@ -41,6 +41,46 @@ This project's main goal was applying solid OOP principles rather than just "mak
 - **Observer pattern** - the GUI (`ImageGUI`) notifies the `GameEngine` on every tick/key press through a custom `Observer`/`Observed` implementation, decoupling input/rendering from game logic.
 - **Singleton pattern** - `SmallFish` and `BigFish` are singletons, reflecting that there is exactly one instance of each character throughout the game's lifecycle.
 - **Encapsulated level loading** - `Room` parses text-based level files into live `GameObject` instances via a factory-style switch, keeping level data completely separate from game logic.
+
+## Game Elements
+### Characters
+* **Small Fish:**
+    * Can pass **Holed Walls**.
+    * Only can push **1 light object**.
+    * He dies if he supporting more than 1 light object or any heavy object.
+* **Big Fish:**
+    * Can push multiple light objects or heavy objects.
+    * If he is supporting more than one heavy object he dies.
+
+## Objects and Interactions
+
+Below is a comprehensive list of the implemented entities and their core behaviors:
+
+| Entity | Category | Gameplay Rules |
+| :--- | :--- | :--- |
+| **Wall** | Static | Acts as an impassable barrier. Capable of supporting the weight of any item. |
+| **Steel (Pipe)** | Static | Obstacle that strictly denies passage. |
+| **Trunk (Wood)** | Static | Shatters and vanishes when crushed by a heavy item falling on it. |
+| **Cup** | Lightweight | A standard item affected by regular downward gravity. |
+| **Stone** | Heavyweight | Drops downwards and is lethal to the fish. Shifting it may reveal a hidden Krab. |
+| **Anchor** | Heavyweight | Horizontal pushing is restricted to a single tile at a time. |
+| **Bomb** | Lightweight | Detonates upon hitting the floor, wiping out nearby entities (sparing the fish that dropped it). |
+| **Trap** | Heavyweight | Lethal to the Big Fish upon contact. The Small Fish can safely swim through it. |
+| **Holed Wall** | Static | A barrier that exclusively allows the Small Fish to cross. |
+| **🎈 Buoy** | Anti-gravity | Features **inverted gravity**. Floats towards the top of the level unless obstructed. Useful for blocking upper pathways or lifting other objects. **Only the Big Fish can push it downwards|
+
+### Krab (Enemy than can kill the Small Fish)
+An autonomous enemy that:
+* Moves randomly around the scenario.
+* Kills the **Small Fish** on touch.
+* Is crushed/eaten by the **Big Fish**.
+* *Spawn:* Can appear as a surprise when a Stone is moved.
+* Only moves when the player moves.
+
+### 💡 Physics Notes
+* **Gravity:** Most movable objects fall downwards when unsupported. 
+* **Anti-Gravity:** The **Buoy** is the exception to standard physics rules, constantly applying an upward force until it hits a ceiling or another blocking entity. 
+* **Character Specifics:** Certain hazards and pathways are designed specifically around the distinct sizes and traits of the two fish, requiring cooperative puzzle-solving to progress.
 
 ## Tech Stack
 
